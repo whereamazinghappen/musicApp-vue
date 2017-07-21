@@ -1,5 +1,5 @@
 require('./check-versions')()
-
+var crawer = require('./crawer')
 var config = require('../config')
 if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
@@ -31,7 +31,7 @@ var devMiddleware = require('webpack-dev-middleware')(compiler, {
 })
 
 var hotMiddleware = require('webpack-hot-middleware')(compiler, {
-  log: () => {},
+  log: () => { },
   heartbeat: 2000
 })
 // force page reload when html-webpack-plugin template changes
@@ -61,6 +61,14 @@ app.use(devMiddleware)
 // compilation error display
 app.use(hotMiddleware)
 
+//前端推荐歌单数据获取请求
+app.get('/api/getRecommends', function (req, res) {
+  crawer.getdiscover().then(function (value){
+    res.json(value)
+  },function(err){  
+    res.json(err)
+  }); 
+})
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))

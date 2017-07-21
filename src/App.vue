@@ -2,7 +2,9 @@
   <div id="app">
     <fix-top></fix-top>
     <nav-tab></nav-tab>
-    <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>    
+      </keep-alive>
   </div>
 </template>
 

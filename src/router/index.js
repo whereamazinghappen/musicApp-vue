@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Recommends from 'components/recommends/recommends'
+import Discovers from 'components/discovers/discovers'
 import Songlists from 'components/songlists/songlists'
 import Fms from 'components/fms/fms'
 import Ranks from 'components/ranks/ranks'
@@ -11,11 +11,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: 'recommend'
+      redirect: 'discover'
     },
     {
-      path: '/recommend',
-      component: Recommends
+      path: '/discover',
+      component: Discovers
     },
     {
       path: '/songlist',

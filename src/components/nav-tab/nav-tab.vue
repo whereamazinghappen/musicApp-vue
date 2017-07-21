@@ -1,6 +1,6 @@
 <template>
     <div class="nav-tab border-1px">
-        <router-link tag="li" class="tab-item" to="/recommend"><span class="tab-link">热门推荐</span></router-link>
+        <router-link tag="li" class="tab-item" to="/discover"><span class="tab-link">热门推荐</span></router-link>
         <router-link tag="li" class="tab-item" to="/songlist"><span class="tab-link">歌单</span></router-link>
         <router-link tag="li" class="tab-item" to="/fm"><span class="tab-link">主播电台</span></router-link>
         <router-link tag="li" class="tab-item" to="/rank"><span class="tab-link">排行榜</span></router-link>
