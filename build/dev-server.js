@@ -63,11 +63,19 @@ app.use(hotMiddleware)
 
 //前端推荐歌单数据获取请求
 app.get('/api/getRecommends', function (req, res) {
-  crawer.getdiscover().then(function (value){
+  crawer.getRecommends().then(function (value) {   
     res.json(value)
-  },function(err){  
+  }, function (err) {
     res.json(err)
-  }); 
+  });
+})
+//前端新歌列表数据获取请求
+app.get('/api/getNewSongs', function (req, res) {
+  crawer.getNewSongs().then(function (value) {
+    res.json(value.data)
+  }).catch(function(err){
+    res.json(err)
+  })
 })
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
