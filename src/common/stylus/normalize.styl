@@ -14,7 +14,10 @@ html {
   -ms-text-size-adjust: 100%; /* 2 */
   -webkit-text-size-adjust: 100%; /* 2 */
 }
-
+ul,li{
+  list-style:none
+  padding:0
+}
 /* Sections
    ========================================================================== */
 
@@ -100,7 +103,9 @@ pre {
  * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.
  */
 
-a {
+a, a:visited {
+  text-decoration:none;
+  color:#333;
   background-color: transparent; /* 1 */
   -webkit-text-decoration-skip: objects; /* 2 */
 }

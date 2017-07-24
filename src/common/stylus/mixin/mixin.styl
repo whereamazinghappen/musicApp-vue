@@ -8,3 +8,14 @@ border-1px($color)
    width:100%
    content:' '
    border: 1px solid $color
+border-left($width,$color)
+  position: relative
+  &::after
+   display:block
+   position:absolute  
+   left:0
+   top:0
+   height:100%
+   width:0
+   content:' '
+   border-left: $width solid $color

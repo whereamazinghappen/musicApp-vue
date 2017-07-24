@@ -10,7 +10,7 @@
     export default {}
 </script>
 <style lang="stylus">
-    #app
+   #app
     .fixtop-wrapper
      position: relative
      height: 50px

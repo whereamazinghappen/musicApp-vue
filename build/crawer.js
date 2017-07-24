@@ -23,9 +23,9 @@ function getRecommends() {
             let remd = []
             $(".remd_li").each(function (k, v) {
                 let remditem = {
-                    "name": $(v).text(),
+                    "name": $(v).find(".remd_text").text(),
                     "href": $(v).attr("href"),
-                    "image": $(v).find(".u-img").attr("src"),
+                    "image": $(v).find(".u-img").attr("src").replace("thumbnail=40","thumbnail=246"),
                     "count": $(v).find(".remd_lnum").text()
                 }
                 remd.push(remditem)
@@ -35,6 +35,7 @@ function getRecommends() {
         })
     })
 }
+getRecommends()
 //使用axios获取最新歌曲列表数据
 function getNewSongs() {
     const URL = "http://music.163.com/weapi/personalized/newsong?csrf_token=2bed48e852df2791b8acee95238a091e"
