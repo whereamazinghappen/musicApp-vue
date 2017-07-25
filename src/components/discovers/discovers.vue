@@ -1,37 +1,50 @@
 <template>
     <div class="discover-warppper">
-        <div class="remdsongs-warpper">
-            <h2>推荐歌单</h2>
-            <div v-if="recommeds.length" class="remd-ul">
-                <ul>
-                    <li :class="{'padding-right-0px':!((index+1)%3)}" class="remd-li" v-for="(item,index) in recommeds">
-                        <a :href="item.href" class="remd-a">
-                            <div class="remd-img">
-                                <img :src="item.image" alt="item.name">
-                                <span class="count">{{ item.count }}</span>
-                            </div>
-                            <p class="remd-text">{{item.name }}</p>
-                        </a>
-                    </li>
-                </ul>
+      <scroll class="remd-content" ref="scroll" :data="newsongs">
+          <div>   
+            <div class="remdsongs-warpper">
+                <h2>推荐歌单</h2>
+                <div v-if="recommeds.length" class="remd-ul">
+                    <ul>
+                        <li :class="{'padding-right-0px':!((index+1)%3)}" class="remd-li" v-for="(item,index) in recommeds">
+                            <a :href="item.href" class="remd-a">
+                                <div class="remd-img">
+                                    <img @load="imageloaded" :src="item.image" alt="item.name">
+                                    <span class="count">{{ item.count }}</span>
+                                </div>
+                                <p class="remd-text">{{item.name }}</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div class="newsongs-warpper">
-            <h2>最新音乐</h2>
-            <div v-if="newsongs.length" class="new-ul">
-                <ul>
-                    <li class="newsong-li" v-for="item in newsongs">
-                        <div class="songname">{{ item.name }}</div>
-                        <div class="songinfo">{{ item.song.artists[0].name+'-'+item.song.album.name }}</div>
-                    </li>
-                </ul>
+            <div class="newsongs-warpper">
+                <h2>最新音乐</h2>
+                <div v-if="newsongs.length" class="new-ul">
+                    <ul>
+                        <li class="newsong-li" v-for="item in newsongs">
+                            <div class="songname">{{ item.name }}</div>
+                            <div class="songinfo">{{ item.song.artists[0].name+'-'+item.song.album.name }}</div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
+          </div>
+      </scroll>
+      <div v-show="!(recommeds.length && newsongs.length)" class="loading-wrapper">
+          <loading></loading>
+      </div>
     </div>
 </template>
 <script>
     import { getRecommends, getNewSongs } from 'api/discover'
+    import Scroll from 'base/scroll/scroll'
+    import Loading from 'base/loading/loading'
     export default {
+      components: {
+        Scroll,
+        Loading
+      },
       data () {
         return {
           recommeds: [],
@@ -56,6 +69,14 @@
               this.newsongs = res.data.result
             }
           })
+        },
+        imageloaded () {
+          if (!this.isfirstloaded) {
+            setTimeout(() => {
+              this.$refs.scroll.refresh()
+            }, 20)
+            this.isfirstloaded = false
+          }
         }
       }
     }
@@ -63,6 +84,18 @@
 <style lang="stylus">
  @import '../../common/stylus/mixin/mixin.styl';
     .discover-warppper
+     position:fixed
+     top:90px
+     bottom:0
+     width:100%
+     .remd-content
+      height:100%
+      overflow:hidden
+     .loading-wrapper
+      position:absolute
+      top:50%
+      width:100%
+      transform:translateY(-50%) 
      h2
       height:20px
       font-size:17px
