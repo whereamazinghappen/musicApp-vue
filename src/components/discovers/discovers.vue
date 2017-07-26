@@ -12,7 +12,7 @@
                                     <img @load="imageloaded" :src="item.image" alt="item.name">
                                     <span class="count">{{ item.count }}</span>
                                 </div>
-                                <p class="remd-text">{{item.name }}</p>
+                                <p class="remd-text">{{ item.name }}</p>
                             </a>
                         </li>
                     </ul>
@@ -23,8 +23,11 @@
                 <div v-if="newsongs.length" class="new-ul">
                     <ul>
                         <li class="newsong-li" v-for="item in newsongs">
-                            <div class="songname">{{ item.name }}</div>
-                            <div class="songinfo">{{ item.song.artists[0].name+'-'+item.song.album.name }}</div>
+                            <div class="song-item">
+                                <div class="songname">{{ item.name }}</div>
+                                <div class="songinfo">{{ item.song.artists[0].name+'-'+item.song.album.name }}</div>
+                            </div>
+                            <div class="song-action"><span class="icon-play2"></span></div>
                         </li>
                     </ul>
                 </div>
@@ -149,4 +152,23 @@
        margin:0
        line-height:1.2
        font-size:13px
+    .newsongs-warpper
+     ul
+      margin:0
+     .newsong-li
+      padding-left:10px
+      height:50px
+      display:flex
+      .song-item
+       flex:1 1 auto
+       .songinfo
+        color:#888
+        font-size:13px
+      .song-action
+       flex 0 0 50px
+       line-height:50px
+       text-align:center
+       font-size:23px
+       color:#d43c33 
+      
 </style>

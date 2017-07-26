@@ -77,6 +77,22 @@ app.get('/api/getNewSongs', function (req, res) {
     res.json(err)
   })
 })
+//前端歌单列表数据获取请求
+app.get('/api/getPlaylists', function (req, res) {
+  crawer.getPlaylists().then(function (value) {
+    res.json(value)
+  }).catch(function(err){
+    res.json(err)
+  })
+})
+//前端歌单列表数据获取请求
+app.get('/api/getHotranks', function (req, res) {
+  crawer.getHotranks().then(function (value) {
+    res.json(value.data.playlist.tracks)
+  }).catch(function(err){
+    res.json(err)
+  })
+})
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))

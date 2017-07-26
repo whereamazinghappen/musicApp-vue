@@ -5,6 +5,7 @@ import Discovers from 'components/discovers/discovers'
 import Songlists from 'components/songlists/songlists'
 import Fms from 'components/fms/fms'
 import Ranks from 'components/ranks/ranks'
+import SongsgroupDetail from 'components/songsgroup-detail/songsgroup-detail'
 Vue.use(Router)
 
 export default new Router({
@@ -19,7 +20,12 @@ export default new Router({
     },
     {
       path: '/songlist',
-      component: Songlists
+      component: Songlists,
+      children: [{
+        path: ':id',
+        component: SongsgroupDetail
+      }
+      ]
     },
     {
       path: '/fm',
