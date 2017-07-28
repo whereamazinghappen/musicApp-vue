@@ -85,10 +85,19 @@ app.get('/api/getPlaylists', function (req, res) {
     res.json(err)
   })
 })
-//前端歌单列表数据获取请求
+//前端热歌排行榜列表数据获取请求
 app.get('/api/getHotranks', function (req, res) {
   crawer.getHotranks().then(function (value) {
     res.json({tracks:value.data.playlist.tracks,updatetime:value.data.playlist.updateTime})
+  }).catch(function(err){
+    res.json(err)
+  })
+})
+//前端歌单详情数据获取请求
+app.get('/api/getPlaylistsDetail', function (req, res) {
+  let id =req.query.id;
+  crawer.getPlaylistsDetail(id).then(function (value) {
+    res.json(value)
   }).catch(function(err){
     res.json(err)
   })

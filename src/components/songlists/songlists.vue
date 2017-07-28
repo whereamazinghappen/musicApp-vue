@@ -17,13 +17,18 @@
       <div v-show="!Playlists.length" class="loading-wrapper">
         <loading></loading>    
       </div>
-    <router-view></router-view>    
+    <transition name="slide">
+        <router-view></router-view>
+    </transition>   
     </div>
 </template>
 <script>
     import { getPlaylists } from 'api/songslist'
     import Scroll from 'base/scroll/scroll'
     import Loading from 'base/loading/loading'
+
+    import { mapMutations } from 'vuex'
+
     export default{
       components: {
         Scroll,
@@ -44,9 +49,13 @@
           })
         },
         detail (item) {
+          this.setSonglist(item)
           let id = item.href.split('=')[1]
           this.$router.push(`/songlist/${id}`)
-        }
+        },
+        ...mapMutations({
+          setSonglist: 'SET_SONGLIST'
+        })
       }
     }
 </script>
@@ -82,5 +91,8 @@
      align-items:center
      padding:0px 5px 0 10px
 
-
+   .slide-enter-active, .slide-leave-active
+     transition: all 0.3s
+   .slide-enter, .slide-leave-to
+     transform: translate3d(100%, 0, 0)
 </style>
