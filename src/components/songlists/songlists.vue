@@ -61,6 +61,11 @@
     overflow:hidden
    ul
     margin:0
+   .loading-wrapper
+     position:absolute
+     top:50%
+     width:100%
+     transform:translateY(-50%) 
    .playlist-li
     display:flex
     height:60px

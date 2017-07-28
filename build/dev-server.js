@@ -88,7 +88,7 @@ app.get('/api/getPlaylists', function (req, res) {
 //前端歌单列表数据获取请求
 app.get('/api/getHotranks', function (req, res) {
   crawer.getHotranks().then(function (value) {
-    res.json(value.data.playlist.tracks)
+    res.json({tracks:value.data.playlist.tracks,updatetime:value.data.playlist.updateTime})
   }).catch(function(err){
     res.json(err)
   })
