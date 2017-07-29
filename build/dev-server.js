@@ -72,7 +72,7 @@ app.get('/api/getRecommends', function (req, res) {
 //前端新歌列表数据获取请求
 app.get('/api/getNewSongs', function (req, res) {
   crawer.getNewSongs().then(function (value) {
-    res.json(value.data)
+    res.json(value)
   }).catch(function(err){
     res.json(err)
   })

@@ -36,7 +36,7 @@ function getRecommends() {
     })
 }
 //使用axios获取最新歌曲列表数据
-function getNewSongs() {
+function _getNewSongs() {
     const URL = "http://music.163.com/weapi/personalized/newsong?csrf_token=2bed48e852df2791b8acee95238a091e"
     const HEADERS = {
         "Content-Type":"application/x-www-form-urlencoded",
@@ -56,6 +56,54 @@ function getNewSongs() {
 
     // axios自身就返回Promise不需要像getRecommends中使用request(不返回Promise)时进行封装
     return axios.post(URL,qs.stringify(PARAMS),{headers:HEADERS})
+}
+//获取mp3文件
+function _getmp3(song){  
+    let artistsinfo = song.artists || song.ar
+    let arname=artistsinfo[0]?artistsinfo[0].name:''
+    let kw = song.name+'-'+arname
+    const URL ='https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
+    const HEADERS = {
+        Host:'c.y.qq.com',
+        Origin:'https://m.y.qq.com',
+        Referer:'https://m.y.qq.com/',
+        "User-Agent":'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
+    }
+    const PARAMS = {
+        g_tk:5381,
+        uin:0,
+        format:'json',
+        inCharset:'utf-8',
+        outCharset:'utf-8',
+        notice:0,
+        platform:'h5',
+        needNewCode:1,
+        w:kw,
+        zhidaqu:1,
+        catZhida:1,
+        t:0,
+        flag:1,
+        ie:'utf-8',
+        sem:1,
+        aggr:0,
+        perpage:20,
+        n:20,
+        p:1,
+        remoteplace:'txt.mqq.all',
+        _:1501301088663
+    }
+    return axios.get(URL,{headers:HEADERS,params:PARAMS}).then((res)=>{        
+        song.qqinfo=res.data.data.song.list[0]
+        return song
+    })
+}
+function getNewSongs(){
+    return _getNewSongs().then((res)=>{
+    let promises = res.data.result.map(function (item) {
+    return _getmp3(item.song);
+    })
+    return Promise.all(promises)   
+    })
 }
 // 爬取歌单数据
 function getPlaylists() {

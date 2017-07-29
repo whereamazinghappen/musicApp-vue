@@ -1,5 +1,6 @@
 <template>
     <div class="detail-wrapper">
+        <div @click="back" class="back"><span class="icon-back"></span></div>
         <div class="bg-wrapper" :style="bgstyle">
         </div>
         <div class="soogsgrounp-desc">
@@ -70,6 +71,9 @@
         formateDesc (item) {
           let desc = item.artists[0].name + '-' + item.album.name
           return desc
+        },
+        back () {
+          this.$router.back()
         }
       },
       computed: {
@@ -92,6 +96,15 @@
      bottom:0
      left:0
      background-color:#f8f8f8
+     .back
+      position:absolute
+      top:0
+      right:0
+      transform:rotateZ(180deg)
+      font-size:20px
+      padding:0 0 5px 5px
+      z-index:1
+      color:#d43b32
      .bg-wrapper
       height:150px
       background-size: cover
@@ -110,11 +123,14 @@
       .songsgroup-img
        flex: 0 0 130px
        position:relative
+       img
+        width:140px
+        height:140px
        .text
         position:absolute
         left:0
         top:20px
-        background-color:red
+        background-color:#d43b32
         border-radius: 0 10px 10px 0
         font-size:13px
         padding: 2px 5px

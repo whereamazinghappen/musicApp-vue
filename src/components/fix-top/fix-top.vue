@@ -1,7 +1,7 @@
 <template>
     <div class="fixtop-wrapper">
         <div class="left-navicon icon-menu"></div>
-        <div class="logo"></div>
+        <div class="logo"><span class="icon-music2"></span></div>
         <div class="logo-text">我的云音乐</div>
         <div class="right-searchicon icon-search"></div>
     </div>
@@ -36,10 +36,8 @@
       display: inline-block
       height: 36px
       width: 36px
-      margin: 8px 2px 0px 0px
-      vertical-align:top
-      background-image: url(./logo.jpg)
-      background-size: 36px 36px
+      vertical-align:middle
+      font-size:23px         
      .logo-text
       display:inline-block
       font-size:18px 

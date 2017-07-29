@@ -1,5 +1,6 @@
 <template>
     <div class="discover-warppper">
+      <audio autoplay :src="songurl"></audio>
       <scroll class="remd-content" ref="scroll" :data="newsongs">
           <div>   
             <div class="remdsongs-warpper">
@@ -7,7 +8,7 @@
                 <div v-if="recommeds.length" class="remd-ul">
                     <ul>
                         <li :class="{'padding-right-0px':!((index+1)%3)}" class="remd-li" v-for="(item,index) in recommeds">
-                            <a :href="item.href" class="remd-a">
+                            <a @click="detail(item)" class="remd-a">
                                 <div class="remd-img">
                                     <img @load="imageloaded" :src="item.image" alt="item.name">
                                     <span class="count">{{ item.count }}</span>
@@ -22,10 +23,10 @@
                 <h2>最新音乐</h2>
                 <div v-if="newsongs.length" class="new-ul">
                     <ul>
-                        <li class="newsong-li" v-for="item in newsongs">
+                        <li @click="playsong(item)" class="newsong-li" v-for="item in newsongs">
                             <div class="song-item">
                                 <div class="songname">{{ item.name }}</div>
-                                <div class="songinfo">{{ item.song.artists[0].name+'-'+item.song.album.name }}</div>
+                                <div class="songinfo">{{ item.artists[0].name+'-'+item.album.name }}</div>
                             </div>
                             <div class="song-action"><span class="icon-play2"></span></div>
                         </li>
@@ -43,6 +44,7 @@
     import { getRecommends, getNewSongs } from 'api/discover'
     import Scroll from 'base/scroll/scroll'
     import Loading from 'base/loading/loading'
+    import { mapMutations } from 'vuex'
     export default {
       components: {
         Scroll,
@@ -51,7 +53,8 @@
       data () {
         return {
           recommeds: [],
-          newsongs: []
+          newsongs: [],
+          songurl: ''
         }
       },
       created () {
@@ -69,7 +72,7 @@
         _getNewSongs () {
           getNewSongs().then((res) => {
             if (res.status === 200) {
-              this.newsongs = res.data.result
+              this.newsongs = res.data
             }
           })
         },
@@ -80,7 +83,18 @@
             }, 20)
             this.isfirstloaded = false
           }
-        }
+        },
+        detail (item) {
+          this.setSonglist(item)
+          let id = item.href.split('=')[1]
+          this.$router.push(`/songlist/${id}`)
+        },
+        playsong (item) {
+          this.songurl = `http://ws.stream.qqmusic.qq.com/${item.qqinfo.songid}.m4a?fromtag=46`
+        },
+        ...mapMutations({
+          setSonglist: 'SET_SONGLIST'
+        })
       }
     }
 </script>
@@ -153,6 +167,8 @@
        line-height:1.2
        font-size:13px
     .newsongs-warpper
+     .new-ul
+      padding-bottom:20px 
      ul
       margin:0
      .newsong-li
