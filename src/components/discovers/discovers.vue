@@ -1,6 +1,5 @@
 <template>
     <div class="discover-warppper">
-      <audio autoplay :src="songurl"></audio>
       <scroll class="remd-content" ref="scroll" :data="newsongs">
           <div>   
             <div class="remdsongs-warpper">
@@ -23,7 +22,7 @@
                 <h2>最新音乐</h2>
                 <div v-if="newsongs.length" class="new-ul">
                     <ul>
-                        <li @click="playsong(item)" class="newsong-li" v-for="item in newsongs">
+                        <li @click="playsong(item,index)" class="newsong-li" v-for="(item,index) in newsongs">
                             <div class="song-item">
                                 <div class="songname">{{ item.name }}</div>
                                 <div class="songinfo">{{ item.artists[0].name+'-'+item.album.name }}</div>
@@ -44,7 +43,7 @@
     import { getRecommends, getNewSongs } from 'api/discover'
     import Scroll from 'base/scroll/scroll'
     import Loading from 'base/loading/loading'
-    import { mapMutations } from 'vuex'
+    import { mapMutations, mapActions } from 'vuex'
     export default {
       components: {
         Scroll,
@@ -53,8 +52,7 @@
       data () {
         return {
           recommeds: [],
-          newsongs: [],
-          songurl: ''
+          newsongs: []
         }
       },
       created () {
@@ -89,12 +87,16 @@
           let id = item.href.split('=')[1]
           this.$router.push(`/songlist/${id}`)
         },
-        playsong (item) {
-          this.songurl = `http://ws.stream.qqmusic.qq.com/${item.qqinfo.songid}.m4a?fromtag=46`
+        playsong (item, index) {
+          // this.songurl = `http://ws.stream.qqmusic.qq.com/${item.qqinfo.songid}.m4a?fromtag=46`
+          this.playmusic({list: this.newsongs, index: index})
         },
         ...mapMutations({
           setSonglist: 'SET_SONGLIST'
-        })
+        }),
+        ...mapActions([
+          'playmusic'
+        ])
       }
     }
 </script>

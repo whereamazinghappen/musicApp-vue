@@ -1,1 +1,6 @@
 export const SET_SONGLIST = 'SET_SONGLIST'
+export const SET_ISPLAYING = 'SET_ISPLAYING'
+export const SET_ISFULL = 'SET_ISFULL'
+export const SET_PLAYLIST = 'SET_PLAYLIST'
+export const SET_PLAYMODE = 'SET_PLAYMODE'
+export const SET_ACTIVEINDEX = 'SET_ACTIVEINDEX'
