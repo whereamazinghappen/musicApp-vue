@@ -1,7 +1,8 @@
 <template>
     <div v-show="playlist.length>0" class="musicplayer-wrapper">
-        <audio autoplay :src="songurl"></audio>
-        <div v-show="isfull" class="fullplayer">
+        <audio ref="audio" :src="songurl"></audio>
+        <transition name="full">
+         <div v-show="isfull" class="fullplayer">
             <div class="bg">
                 <img :src="activeSong.album.blurPicUrl" alt="">
             </div>
@@ -30,7 +31,7 @@
                        <span class="icon-prev"></span>
                    </div>
                    <div class="icon-action">
-                       <span class="icon-play"></span>
+                       <span @click="tooglePlay" :class="playicon"></span>
                    </div>
                    <div class="icon-action">
                        <span class="icon-next"></span>
@@ -40,8 +41,10 @@
                    </div>
                </div>
             </div>
-        </div>
-        <div v-show="!isfull" class="smallplayer">
+         </div>        
+        </transition>
+       <transition name="small">
+          <div v-show="!isfull" class="smallplayer" @click="full()">
             <div class="sm-cd">
                 <img :src="activeSong.album.picUrl" alt="">
             </div>
@@ -50,12 +53,13 @@
                 <div class="singer-name">{{ activeSong.artists[0].name }}</div>
             </div>
             <div class="song-play">
-                <span class="icon-play"></span>
+                <span @click.stop="tooglePlay" :class="playicon"></span>
             </div>
             <div class="song-list">
                 <span class="icon-playlist"></span>
             </div>
         </div>
+       </transition>
     </div>
 </template>
 <script>
@@ -65,19 +69,43 @@ export default{
     ...mapGetters([
       'isfull',
       'playlist',
-      'activeSong'
+      'activeSong',
+      'isplaying'
     ]),
     songurl () {
       return `http://ws.stream.qqmusic.qq.com/${this.activeSong.qqinfo.songid}.m4a?fromtag=46`
+    },
+    playicon () {
+      return this.isplaying ? 'icon-pause' : 'icon-play'
     }
   },
   methods: {
     back () {
       this.setfull(false)
     },
+    full () {
+      this.setfull(true)
+    },
+    tooglePlay () {
+      this.setisplaying(!this.isplaying)
+    },
     ...mapMutations({
-      'setfull': 'SET_ISFULL'
+      'setfull': 'SET_ISFULL',
+      'setisplaying': 'SET_ISPLAYING'
     })
+  },
+  watch: {
+    activeSong () {
+      this.$nextTick(() => {
+        this.$refs.audio.play()
+      })
+    },
+    isplaying (newplay) {
+      const audio = this.$refs.audio
+      this.$nextTick(() => {
+        newplay ? audio.play() : audio.pause()
+      })
+    }
   }
 }
 </script>
@@ -91,6 +119,16 @@ export default{
     left:0
     z-index:99
     background-color:#666
+    &.full-enter-active,&.full-leave-active
+     transition:all .4s
+     .player-top,.player-footer
+      transition:all .4s linear
+    &.full-enter,&.full-leave-to
+     opacity:0
+     .player-top
+      transform:translate3d(0,-100px,0)
+     .player-footer
+      transform:translate3d(0,100px,0)   
     .bg
      position:absolute
      top:0
@@ -170,7 +208,12 @@ export default{
     background-color:#fff
     height:50px
     display:flex
-    border-top(2px,#d33a31)
+    border-top(2px,#d33a31)    
+    &.small-enter-active,&.small-leave-active
+     transition:all .6s    
+    &.small-enter,&.small-leave-to
+     opacity:0
+     transform:translateY(100px)
     .sm-cd
      flex: 0 0 50px    
      img
