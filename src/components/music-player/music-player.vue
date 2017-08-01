@@ -17,10 +17,20 @@
             </div>
             <div class="player-body">
                 <div class="cd-wrapper">
-                    <div class="cd">
+                    <div class="cd" :class="isrotate">
                         <img :src="activeSong.album.picUrl" alt="">
                     </div>
                 </div>
+                <scroll class="lyric-scroll" ref="lyricList" :data="lrc && lrc.lines">        
+                <div class="lyric-wrapper">
+                    <div v-if="lrc">
+                    <p  ref="lyricLine"
+                        class="text"
+                        :class="{'current': currentLineNum ===index}"
+                        v-for="(line,index) in lrc.lines">{{line.txt}}</p>
+                    </div>
+                </div>
+                </scroll>
             </div>
             <div class="player-footer">
                <div class="actions">
@@ -64,7 +74,20 @@
 </template>
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import Lyric from 'lyric-parser'
+import { getLrc } from 'api/song'
+import Scroll from 'base/scroll/scroll'
 export default{
+  data () {
+    return {
+      lrc: null,
+      playingLyric: '',
+      currentLineNum: 0
+    }
+  },
+  components: {
+    Scroll
+  },
   computed: {
     ...mapGetters([
       'isfull',
@@ -77,6 +100,9 @@ export default{
     },
     playicon () {
       return this.isplaying ? 'icon-pause' : 'icon-play'
+    },
+    isrotate () {
+      return this.isplaying ? 'play' : 'play pause'
     }
   },
   methods: {
@@ -88,6 +114,27 @@ export default{
     },
     tooglePlay () {
       this.setisplaying(!this.isplaying)
+      this.lrc.togglePlay()
+    },
+    getLrc (id) {
+      getLrc(id).then((res) => {
+        let lyric = res.data
+        this.lrc = new Lyric(lyric, this.handleLyric)
+        this.lrc.play()
+      })
+    },
+    handleLyric ({lineNum, txt}) {
+      if (!this.$refs.lyricLine) {
+        return
+      }
+      this.currentLineNum = lineNum
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5]
+        this.$refs.lyricList.scrollToElement(lineEl, 1000)
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
+      this.playingLyric = txt
     },
     ...mapMutations({
       'setfull': 'SET_ISFULL',
@@ -98,6 +145,7 @@ export default{
     activeSong () {
       this.$nextTick(() => {
         this.$refs.audio.play()
+        this.getLrc(this.activeSong.qqinfo.songid)
       })
     },
     isplaying (newplay) {
@@ -166,9 +214,21 @@ export default{
       font-size:13px 
     .player-body
      position:fixed
-     top:120px
+     top:80px
      bottom:150px
-     width:100%
+     width:100%      
+     .lyric-scroll
+      position: absolute
+      left:0
+      top:0
+      width:100%
+      height:100%
+      text-align:center
+      overflow:hidden      
+      .text
+       color:#666
+       &.current
+        color:red
      .cd-wrapper
       width:100%
       text-align:center
@@ -183,6 +243,10 @@ export default{
        background-image:url('./cd.png')
        background-size:cover
        border-radius:50%
+       &.play
+        animation: rotate 20s linear infinite
+       &.pause
+        animation-play-state: paused  
        img
         height:70%
         width:70%
@@ -240,5 +304,11 @@ export default{
      text-align:center
      line-height:50px
      font-size:23px
-     color:#666     
+     color:#666
+
+@keyframes rotate
+ 0%
+  transform: rotate(0)
+ 100%
+  transform: rotate(360deg)         
 </style>

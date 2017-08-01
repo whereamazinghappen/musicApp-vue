@@ -102,6 +102,15 @@ app.get('/api/getPlaylistsDetail', function (req, res) {
     res.json(err)
   })
 })
+//前端获取歌词数据获取请求
+app.get('/api/getLrc', function (req, res) {
+  let id =req.query.id;
+  crawer.getLrc(id).then(function (value) {
+    res.json(value)
+  }).catch(function(err){
+    res.json(err)
+  })
+})
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))

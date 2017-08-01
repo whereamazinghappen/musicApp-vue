@@ -189,10 +189,34 @@ function getHotranks() {
     // axios自身就返回Promise不需要像getRecommends中使用request(不返回Promise)时进行封装
     return axios.post(URL,qs.stringify(PARAMS),{headers:HEADERS})
 }
+// 获取歌词数据
+function getLrc (id) {
+    const URL ='https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'   
+    const HEADERS = {
+        Host:'c.y.qq.com',
+        Origin:'https://m.y.qq.com',
+        Referer:'https://m.y.qq.com/',
+        "User-Agent":'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
+    }
+    const PARAMS = {
+        nobase64:1,
+        musicid:id,
+        songtype:0  
+    }
+    return axios.get(URL,{headers:HEADERS,params:PARAMS}).then((res)=>{
+        let reg = /^\w+\(({[^()]+})\)$/        
+        let matches = res.data.match(reg)
+        if (matches) {
+          let ret = JSON.parse(matches[1])
+          return Promise.resolve(ret.lyric)    
+        }       
+  })
+}
 module.exports = {
     getRecommends: getRecommends,
     getNewSongs: getNewSongs,
     getPlaylists: getPlaylists,
     getHotranks: getHotranks,
-    getPlaylistsDetail: getPlaylistsDetail
+    getPlaylistsDetail: getPlaylistsDetail,
+    getLrc: getLrc    
 }
