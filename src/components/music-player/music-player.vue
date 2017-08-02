@@ -1,6 +1,6 @@
 <template>
-    <div v-show="playlist.length>0" class="musicplayer-wrapper">
-        <audio ref="audio" :src="songurl"></audio>
+    <div v-if="playlist.length>0" class="musicplayer-wrapper">
+        <audio @canplay="ready" @error="error" ref="audio" :src="songurl"></audio>
         <transition name="full">
          <div v-show="isfull" class="fullplayer">
             <div class="bg">
@@ -16,21 +16,21 @@
                 </div>
             </div>
             <div class="player-body">
-                <div class="cd-wrapper">
-                    <div class="cd" :class="isrotate">
+                <div :class="{show:!lyricshow}" class="cd-wrapper">
+                    <div @click="toogleshowlyric" class="cd" :class="isrotate">
                         <img :src="activeSong.album.picUrl" alt="">
                     </div>
-                </div>
-                <scroll class="lyric-scroll" ref="lyricList" :data="lrc && lrc.lines">        
-                <div class="lyric-wrapper">
-                    <div v-if="lrc">
-                    <p  ref="lyricLine"
-                        class="text"
-                        :class="{'current': currentLineNum ===index}"
-                        v-for="(line,index) in lrc.lines">{{line.txt}}</p>
+                </div>                
+                    <scroll :class="{show:lyricshow}" class="lyric-scroll" ref="lyricList" :data="lrc && lrc.lines">        
+                    <div  @click="toogleshowlyric" class="lyric-wrapper">
+                        <div v-if="lrc">
+                        <p  ref="lyricLine"
+                            class="text"
+                            :class="{'current': currentLineNum ===index}"
+                            v-for="(line,index) in lrc.lines">{{line.txt}}</p>
+                        </div>
                     </div>
-                </div>
-                </scroll>
+                    </scroll>
             </div>
             <div class="player-footer">
                <div class="actions">
@@ -82,7 +82,9 @@ export default{
     return {
       lrc: null,
       playingLyric: '',
-      currentLineNum: 0
+      currentLineNum: 0,
+      songReady: false,
+      lyricshow: false
     }
   },
   components: {
@@ -96,7 +98,9 @@ export default{
       'isplaying'
     ]),
     songurl () {
-      return `http://ws.stream.qqmusic.qq.com/${this.activeSong.qqinfo.songid}.m4a?fromtag=46`
+      if (this.activeSong) {
+        return `http://ws.stream.qqmusic.qq.com/${this.activeSong.qqinfo.songid}.m4a?fromtag=46`
+      }
     },
     playicon () {
       return this.isplaying ? 'icon-pause' : 'icon-play'
@@ -112,9 +116,19 @@ export default{
     full () {
       this.setfull(true)
     },
+    ready () {
+      this.songReady = true
+    },
+    error () {
+      this.songReady = true
+    },
     tooglePlay () {
+      if (!this.songReady) return
       this.setisplaying(!this.isplaying)
       this.lrc.togglePlay()
+    },
+    toogleshowlyric () {
+      this.lyricshow = !this.lyricshow
     },
     getLrc (id) {
       getLrc(id).then((res) => {
@@ -143,12 +157,14 @@ export default{
   },
   watch: {
     activeSong () {
+      this.songReady = false
       this.$nextTick(() => {
         this.$refs.audio.play()
         this.getLrc(this.activeSong.qqinfo.songid)
       })
     },
     isplaying (newplay) {
+      if (!this.songReady) return
       const audio = this.$refs.audio
       this.$nextTick(() => {
         newplay ? audio.play() : audio.pause()
@@ -224,7 +240,13 @@ export default{
       width:100%
       height:100%
       text-align:center
-      overflow:hidden      
+      overflow:hidden
+      opacity:0
+      transform:scale(0)
+      transition:all .5s linear
+      &.show
+       opacity:1
+       transform:scale(1)      
       .text
        color:#666
        &.current
@@ -234,6 +256,12 @@ export default{
       text-align:center
       padding-top:70%
       position:relative
+      opacity:0
+      transform:scale(0)
+      transition:all .5s linear
+      &.show
+       opacity:1
+       transform:scale(1)
       .cd
        width:70%
        position:absolute
