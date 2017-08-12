@@ -1,6 +1,6 @@
 <template>
     <div v-if="playlist.length>0" class="musicplayer-wrapper">
-        <audio @canplay="ready" @error="error" ref="audio" :src="songurl"></audio>
+        <audio @canplay="ready" @error="error" @timeupdate="timeupdate" ref="audio" :src="songurl"></audio>
         <transition name="full">
          <div v-show="isfull" class="fullplayer">
             <div class="bg">
@@ -33,6 +33,13 @@
                     </scroll>
             </div>
             <div class="player-footer">
+               <div class="progress">
+                <div class="time time-cur">{{ formatTime(currentTime) }}</div>
+                <div class="progress-wrapper">
+                  <progressbar></progressbar>
+                </div>
+                <div class="time time-all">{{ formatTime(formatDuration(activeSong.duration)) }}</div>
+               </div>
                <div class="actions">
                    <div class="icon-action">
                        <span class="icon-sequence"></span>
@@ -77,6 +84,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import Lyric from 'lyric-parser'
 import { getLrc } from 'api/song'
 import Scroll from 'base/scroll/scroll'
+import Progressbar from 'base/progressbar/progressbar'
 export default{
   data () {
     return {
@@ -84,11 +92,13 @@ export default{
       playingLyric: '',
       currentLineNum: 0,
       songReady: false,
-      lyricshow: false
+      lyricshow: false,
+      currentTime: 0
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Progressbar
   },
   computed: {
     ...mapGetters([
@@ -149,6 +159,26 @@ export default{
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
       this.playingLyric = txt
+    },
+    timeupdate (e) {
+      this.currentTime = e.target.currentTime
+    },
+    formatDuration (time) {
+      return time / 1000
+    },
+    formatTime (time) {
+      let times = time | 0
+      let minutes = times / 60 | 0
+      let seconds = this._pad(times % 60)
+      return `${minutes}:${seconds}`
+    },
+    _pad (number, n = 2) {
+      let long = number.toString().length
+      while (long < n) {
+        number = '0' + number
+        long++
+      }
+      return number
     },
     ...mapMutations({
       'setfull': 'SET_ISFULL',
@@ -285,6 +315,16 @@ export default{
      bottom:40px
      left:0
      width:100%
+     .progress
+      display:flex
+      width:80%
+      margin: 0 auto
+      padding :10px 0
+      color: #fff
+      .time
+       flex: 0 0 30px
+      .progress-wrapper
+       flex: 1 1 auto 
      .actions
       display:flex
       .icon-action
