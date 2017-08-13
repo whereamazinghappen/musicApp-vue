@@ -1,6 +1,6 @@
 <template>
     <div v-if="playlist.length>0" class="musicplayer-wrapper">
-        <audio @canplay="ready" @error="error" @timeupdate="timeupdate" ref="audio" :src="songurl"></audio>
+        <audio @canplay="ready" @error="error" @ended="end" @timeupdate="timeupdate" ref="audio" :src="songurl"></audio>
         <transition name="full">
          <div v-show="isfull" class="fullplayer">
             <div class="bg">
@@ -36,7 +36,7 @@
                <div class="progress">
                 <div class="time time-cur">{{ formatTime(currentTime) }}</div>
                 <div class="progress-wrapper">
-                  <progressbar></progressbar>
+                  <progressbar :percents="percents" @changeProgress="onchangeProgress"></progressbar>
                 </div>
                 <div class="time time-all">{{ formatTime(formatDuration(activeSong.duration)) }}</div>
                </div>
@@ -117,6 +117,9 @@ export default{
     },
     isrotate () {
       return this.isplaying ? 'play' : 'play pause'
+    },
+    percents () {
+      return this.currentTime / this.formatDuration(this.activeSong.duration)
     }
   },
   methods: {
@@ -131,6 +134,9 @@ export default{
     },
     error () {
       this.songReady = true
+    },
+    end () {
+      this.setisplaying(false)
     },
     tooglePlay () {
       if (!this.songReady) return
@@ -171,6 +177,12 @@ export default{
       let minutes = times / 60 | 0
       let seconds = this._pad(times % 60)
       return `${minutes}:${seconds}`
+    },
+    onchangeProgress (p) {
+      this.$refs.audio.currentTime = this.formatDuration(this.activeSong.duration) * p
+      if (!this.isplaying) {
+        this.tooglePlay()
+      }
     },
     _pad (number, n = 2) {
       let long = number.toString().length
@@ -322,7 +334,12 @@ export default{
       padding :10px 0
       color: #fff
       .time
-       flex: 0 0 30px
+       flex: 0 0 40px
+       font-size:13px
+      .time-cur
+       text-align:left    
+      .time-all
+       text-align:right
       .progress-wrapper
        flex: 1 1 auto 
      .actions
